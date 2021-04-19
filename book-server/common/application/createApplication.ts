@@ -60,6 +60,16 @@ export async function createApplication(
   logger.info('站点资源目录public');
   app.use(mount(staticAssetsOptions.prefix, koaStatic(staticAssetsOptions.root, staticAssetsOptions as any)));
 
+  const wwwAssetsOptions = Object.assign(
+    {
+      root: Path.join(root, '.', 'www'),
+      prefix: '/',
+      maxage: 86400000,
+    },
+    options.staticAssets,
+  );
+  app.use(mount(wwwAssetsOptions.prefix, koaStatic(wwwAssetsOptions.root, wwwAssetsOptions as any)));
+
   if (options.bodyparser !== false) {
     const bodyparserOptions = Object.assign(
       {
