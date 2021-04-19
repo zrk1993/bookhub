@@ -13,13 +13,15 @@
   },
   "keywords": [],
   "author": {
-    "name": "zhengrenkun",
-    "email": "zhengrenkun@chandashi.com"
+    "name": "dj",
+    "email": "dj@chandashi.com"
   },
   "license": "MIT",
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "icon": "src/houzi"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
@@ -45,7 +47,8 @@
     }
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "lowdb": "^1.0.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.54",
