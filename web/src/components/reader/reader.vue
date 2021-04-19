@@ -1,0 +1,203 @@
+<template>
+  <div>
+    <div id="reader" ref="reader">
+    </div>
+    <div @click="onClickEvent">
+      <Control ref="Control"
+               :readingProgress="readingProgress"
+               @jumpCfi="jumpCfi"
+               @nextChapter="nextChapter"
+               @prevChapter="prevChapter"
+               @showCatalog="showCatalog"></Control>
+      <Catalog ref="Catalog" @jump="jump"></Catalog>
+    </div>
+  </div>
+</template>
+
+<script>
+import {bookInfo} from '@/services/book'
+import {getAppearance} from '@/services/reader'
+import Control from '@/components/reader/control'
+import Catalog from '@/components/reader/catalog'
+
+export default {
+  components: {
+    Control,
+    Catalog
+  },
+  data() {
+    return {
+      loading: false,
+      clickListen: null,
+      loadingEpub: false,
+      bookInfo: null,
+      appearanceInfo: null,
+      rendition: null,
+      toc: [],
+      readingProgress: {
+        percentage: '',
+        cfi: '',
+        href: ''
+      }
+    }
+  },
+  mounted() {
+    this.getData()
+    this.getAppearance()
+  },
+  methods: {
+    onClickEvent(e) {
+      const docWidth = document.body.clientWidth
+      const docHeight = document.body.clientHeight
+      const clientX = Math.min(e.screenX, e.clientX)
+      const clientY = Math.min(e.screenY, e.clientY)
+      if (clientY > docHeight - 60 || clientY < 60) {
+        return
+      }
+      if (clientX > docWidth * 0.35 && clientX < docWidth * 0.65) {
+        this.$refs.Control.toggle()
+        return
+      }
+      if (clientX > document.body.clientWidth * 0.5) {
+        this.nextPage();
+        this.$refs.Control.close()
+      } else {
+        this.prevPage();
+        this.$refs.Control.close()
+      }
+    },
+    showCatalog() {
+      this.$refs.Catalog.open(this.toc)
+    },
+    jump(v) {
+      this.rendition.display(v.href);
+    },
+    jumpCfi(v) {
+      this.rendition.display(v);
+    },
+    nextChapter() {
+      console.log(this.rendition)
+      const i = this.toc.findIndex((v) => v.href === this.readingProgress.href)
+      const n = this.toc[i + 1]
+      if (n) this.rendition.display(n.ref);
+    },
+    prevChapter() {
+      const i = this.toc.findIndex((v) => v.href === this.readingProgress.href)
+      const n = this.toc[i - 1]
+      if (n) this.rendition.display(n.ref);
+    },
+    nextPage() {
+      this.rendition.next();
+    },
+    prevPage() {
+      this.rendition.prev();
+    },
+    setTheme () {
+      // 设置样式
+      if (!this.appearanceInfo || !this.rendition) {
+        return
+      }
+      this.rendition.themes.default({
+        body: {
+          'font-size': this.appearanceInfo.fontSize,
+          'color': this.appearanceInfo.color,
+          'background': this.appearanceInfo.background
+        },
+      });
+    },
+    renderBook() {
+      const that = this
+      this.loadingEpub = true
+      const book = window.ePub(this.bookInfo.bookPath);
+      this.loadingEpub = false
+      const rendition = this.rendition = book.renderTo("reader", {
+        width: '100%',
+        height: document.documentElement.clientHeight,
+        flow: "paginated"
+      });
+
+      this.setTheme()
+
+      this.jumpCfi(this.bookInfo.cfi)
+      console.log(rendition)
+
+      rendition.on("rendered", (e, i) => {
+        let mousedownE = null
+        let mousedownT = null
+        i.document.documentElement.addEventListener('mousedown', function (e) {
+          mousedownE = e
+          mousedownT = Date.now()
+        })
+        i.document.documentElement.addEventListener('mouseup', function (e) {
+          if (Math.abs(mousedownE.clientX - e.clientX) < 5 && Date.now() - mousedownT < 600) {
+            that.onClickEvent(e)
+          }
+        })
+        i.document.documentElement.addEventListener('touchend', function (e) {
+          // that.onClickEvent(e)
+        })
+      });
+
+      //  时时保存阅读进度
+      rendition.on('relocated', function (location) {
+        that.readingProgress.percentage = location.start.percentage
+        that.readingProgress.cfi = location.start.cfi
+        that.readingProgress.href = location.start.href
+        console.log(location)
+      });
+
+      book.ready.then(function () {
+        const locations = book.locations.generate(1600); // 很慢，后面可以考虑存起来
+        return locations;
+      });
+
+      // 加载目录
+      book.loaded.navigation.then(navigation => {
+        that.toc = navigation.toc
+        console.log(navigation.toc)
+      });
+    },
+    async getData() {
+      try {
+        this.loading = true
+        const {code, data, message} = await bookInfo()
+        if (code === 0) {
+          this.bookInfo = data
+          this.renderBook()
+        } else {
+          this.$notify({type: 'warning', message})
+        }
+      } catch (e) {
+        console.log(e)
+        this.$notify({type: 'danger', message: e.message})
+      } finally {
+        this.loading = false
+      }
+    },
+    async getAppearance() {
+      try {
+        const {code, data, message} = await getAppearance()
+        if (code === 0) {
+          this.appearanceInfo = data
+          this.setTheme()
+        } else {
+          this.$notify({type: 'warning', message})
+        }
+      } catch (e) {
+        console.log(e)
+        this.$notify({type: 'danger', message: e.message})
+      }
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.full {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+</style>
