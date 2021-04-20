@@ -16,7 +16,7 @@
 
 <script>
 import {bookInfo} from '@/services/book'
-import {getAppearance} from '@/services/reader'
+import {getAppearance, setAppearance, getProgress, setProgress} from '@/services/reader'
 import Control from '@/components/reader/control'
 import Catalog from '@/components/reader/catalog'
 
@@ -27,6 +27,7 @@ export default {
   },
   data() {
     return {
+      book_id: null,
       loading: false,
       clickListen: null,
       loadingEpub: false,
@@ -35,15 +36,17 @@ export default {
       rendition: null,
       toc: [],
       readingProgress: {
-        percentage: '',
+        percentage: 0,
         cfi: '',
         href: ''
       }
     }
   },
   mounted() {
+    this.book_id = this.$route.query.book_id || 1
     this.getData()
     this.getAppearance()
+    this.getProgress()
   },
   methods: {
     onClickEvent(e) {
@@ -108,7 +111,7 @@ export default {
     renderBook() {
       const that = this
       this.loadingEpub = true
-      const book = window.ePub(this.bookInfo.bookPath);
+      const book = window.ePub(this.bookInfo.file_path);
       this.loadingEpub = false
       const rendition = this.rendition = book.renderTo("reader", {
         width: '100%',
@@ -118,7 +121,7 @@ export default {
 
       this.setTheme()
 
-      this.jumpCfi(this.bookInfo.cfi)
+      this.jumpCfi(this.readingProgress.cfi)
       console.log(rendition)
 
       rendition.on("rendered", (e, i) => {
@@ -144,6 +147,7 @@ export default {
         that.readingProgress.cfi = location.start.cfi
         that.readingProgress.href = location.start.href
         console.log(location)
+        that.setProgress(location.start)
       });
 
       book.ready.then(function () {
@@ -160,7 +164,7 @@ export default {
     async getData() {
       try {
         this.loading = true
-        const {code, data, message} = await bookInfo()
+        const {code, data, message} = await bookInfo({ book_id: this.book_id })
         if (code === 0) {
           this.bookInfo = data
           this.renderBook()
@@ -176,11 +180,51 @@ export default {
     },
     async getAppearance() {
       try {
-        const {code, data, message} = await getAppearance()
+        const {code, data, message} = await getAppearance({ book_id: this.book_id })
         if (code === 0) {
-          this.appearanceInfo = data
-          this.setTheme()
+          if (data) {
+            this.appearanceInfo = data
+            this.setTheme()
+          }
         } else {
+          this.$notify({type: 'warning', message})
+        }
+      } catch (e) {
+        console.log(e)
+        this.$notify({type: 'danger', message: e.message})
+      }
+    },
+    async setAppearance(v) {
+      try {
+        const {code, message} = await setAppearance(v)
+        if (code !== 0) {
+          this.$notify({type: 'warning', message})
+        }
+      } catch (e) {
+        console.log(e)
+        this.$notify({type: 'danger', message: e.message})
+      }
+    },
+    async getProgress() {
+      try {
+        const {code, data, message} = await getProgress({ book_id: this.book_id })
+        if (code === 0) {
+          if (data) {
+            this.readingProgress = data
+            this.jumpCfi(this.readingProgress.cfi)
+          }
+        } else {
+          this.$notify({type: 'warning', message})
+        }
+      } catch (e) {
+        console.log(e)
+        this.$notify({type: 'danger', message: e.message})
+      }
+    },
+    async setProgress(v) {
+      try {
+        const {code, message} = await setProgress(Object.assign({ book_id: this.book_id }, v))
+        if (code !== 0) {
           this.$notify({type: 'warning', message})
         }
       } catch (e) {

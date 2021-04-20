@@ -12,8 +12,8 @@ const orm = new DBM({
   host: 'localhost',
   port: 3306,
   user: 'root',
-  password: 'Mysql@123456',
-  database: 'pay',
+  password: '123456',
+  database: 'boohub',
   isDebug: false,
 });
 

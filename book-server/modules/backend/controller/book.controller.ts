@@ -23,13 +23,11 @@ export class Book {
       progress: '123123'
     };
   }
-
+  
   @Get('/info')
   async info(@Ctx() ctx: Koa.Context) {
     return ResultUtils.success({
-      bookPath: '/public/book/123.epub',
-      bookName: '132',
-      progress: '123123'
+      file_path: '/public/book/123.epub',
     });
   }
 
