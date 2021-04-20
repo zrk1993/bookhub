@@ -1,7 +1,6 @@
 import '@vant/touch-emulator'
 import Vue from 'vue'
 import ePub from 'epubjs'
-import VConsole from 'vconsole'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -22,4 +21,4 @@ new Vue({
   render: h => h(App)
 }).$mount('#app')
 
-var vConsole = new VConsole()
+// var vConsole = new VConsole()

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="reader" ref="reader">
+    <div id="reader">
     </div>
     <div @click="onClickEvent">
       <Control ref="Control"
@@ -32,8 +32,13 @@ export default {
       clickListen: null,
       loadingEpub: false,
       bookInfo: null,
-      appearanceInfo: null,
+      appearanceInfo: {
+        'font-size': '22px',
+        'color': '#ffffff',
+        'background-color': 'rgb(30, 30, 30)'
+      },
       rendition: null,
+      readDoc: null,
       toc: [],
       readingProgress: {
         percentage: 0,
@@ -76,7 +81,9 @@ export default {
       this.rendition.display(v.href);
     },
     jumpCfi(v) {
-      this.rendition.display(v);
+      if (v) {
+        this.rendition.display(v);
+      }
     },
     nextChapter() {
       console.log(this.rendition)
@@ -95,18 +102,18 @@ export default {
     prevPage() {
       this.rendition.prev();
     },
-    setTheme () {
+    setTheme() {
       // 设置样式
-      if (!this.appearanceInfo || !this.rendition) {
-        return
-      }
       this.rendition.themes.default({
         body: {
-          'font-size': this.appearanceInfo.fontSize,
+          'font-size': this.appearanceInfo.font_size,
           'color': this.appearanceInfo.color,
           'background': this.appearanceInfo.background
         },
       });
+      if (this.readDoc) {
+        this.readDoc.document.documentElement.style.fontSize = this.appearanceInfo.font_size
+      }
     },
     renderBook() {
       const that = this
@@ -119,12 +126,14 @@ export default {
         flow: "paginated"
       });
 
-      this.setTheme()
-
       this.jumpCfi(this.readingProgress.cfi)
       console.log(rendition)
 
+      this.setTheme()
+
       rendition.on("rendered", (e, i) => {
+        that.readDoc = i
+        that.setTheme()
         let mousedownE = null
         let mousedownT = null
         i.document.documentElement.addEventListener('mousedown', function (e) {
@@ -139,6 +148,7 @@ export default {
         i.document.documentElement.addEventListener('touchend', function (e) {
           // that.onClickEvent(e)
         })
+        console.log(i)
       });
 
       //  时时保存阅读进度
@@ -164,7 +174,7 @@ export default {
     async getData() {
       try {
         this.loading = true
-        const {code, data, message} = await bookInfo({ book_id: this.book_id })
+        const {code, data, message} = await bookInfo({book_id: this.book_id})
         if (code === 0) {
           this.bookInfo = data
           this.renderBook()
@@ -180,7 +190,7 @@ export default {
     },
     async getAppearance() {
       try {
-        const {code, data, message} = await getAppearance({ book_id: this.book_id })
+        const {code, data, message} = await getAppearance({book_id: this.book_id})
         if (code === 0) {
           if (data) {
             this.appearanceInfo = data
@@ -207,7 +217,7 @@ export default {
     },
     async getProgress() {
       try {
-        const {code, data, message} = await getProgress({ book_id: this.book_id })
+        const {code, data, message} = await getProgress({book_id: this.book_id})
         if (code === 0) {
           if (data) {
             this.readingProgress = data
@@ -223,7 +233,10 @@ export default {
     },
     async setProgress(v) {
       try {
-        const {code, message} = await setProgress(Object.assign({ book_id: this.book_id }, v))
+        if (v.percentage < 0.0001) {
+          return
+        }
+        const {code, message} = await setProgress(Object.assign({book_id: this.book_id}, v))
         if (code !== 0) {
           this.$notify({type: 'warning', message})
         }

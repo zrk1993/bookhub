@@ -43,22 +43,29 @@ export class reader {
 
   @Get('/appearance')
   async getAppearance(@Ctx() ctx: Koa.Context) {
-    const appearance = await ApperanceModel.getById(ctx.query.id);
-    if (appearance) {
-      return ResultUtils.success(appearance)
-    }
+    // const appearance = await ApperanceModel.getById(ctx.query.id);
+    // if (appearance) {
+    //   return ResultUtils.success(appearance)
+    // }
 
     return ResultUtils.success({
       code: 'dark',
-      background: '#1a1a1a',
+      background: 'rgba(255,255,255,.9)',
       color: 'rgba(255,255,255,.9)',
-      fontSize: '16px',
+      font_size: '26px',
     })
+
+    // return ResultUtils.success({
+    //   code: 'dark',
+    //   background: '#1a1a1a',
+    //   color: 'rgba(255,255,255,.6)',
+    //   font_size: '26px',
+    // })
 
     return ResultUtils.success({
       code: 'default',
       color: '#000',
-      fontSize: '14px',
+      font_size: '20px',
       background: '#c4b395 url(/public/image/theme/skin-default.jpg) no-repeat center'
     });
   }
