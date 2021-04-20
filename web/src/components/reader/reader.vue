@@ -2,7 +2,7 @@
   <div>
     <div id="reader">
     </div>
-    <div @click="onClickEvent">
+    <div @click="onClickEvent" v-if="false">
       <Control ref="Control"
                :readingProgress="readingProgress"
                @jumpCfi="jumpCfi"
@@ -27,6 +27,7 @@ export default {
   },
   data() {
     return {
+      show: true,
       book_id: null,
       loading: false,
       clickListen: null,
@@ -52,6 +53,20 @@ export default {
     this.getData()
     this.getAppearance()
     this.getProgress()
+
+    const that = this
+    window.__command = function (v) {
+      if (v === 'prev_page') {
+        that.prevPage();
+      }
+      if (v === 'next_page') {
+        console.log(1)
+        that.nextPage();
+      }
+      if (v === 'boss') {
+        that.show = !that.show;
+      }
+    }
   },
   methods: {
     onClickEvent(e) {
@@ -136,13 +151,14 @@ export default {
         that.setTheme()
         let mousedownE = null
         let mousedownT = null
+        console.log(e)
         i.document.documentElement.addEventListener('mousedown', function (e) {
           mousedownE = e
           mousedownT = Date.now()
         })
         i.document.documentElement.addEventListener('mouseup', function (e) {
           if (Math.abs(mousedownE.clientX - e.clientX) < 5 && Date.now() - mousedownT < 600) {
-            that.onClickEvent(e)
+            // that.onClickEvent(e)
           }
         })
         i.document.documentElement.addEventListener('touchend', function (e) {

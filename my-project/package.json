@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "bookhub",
   "version": "0.0.1",
   "author": "dj",
   "description": "appp",
@@ -17,8 +17,8 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "app",
-    "appId": "com.example.yourapp",
+    "productName": "bookhub",
+    "appId": "com.example.bookhub",
     "directories": {
       "output": "build"
     },

@@ -5,6 +5,9 @@
       class="ifr"
       :src="url"
       :plugins="true"
+      nodeintegration
+      disablewebsecurity
+      ref="web"
       useragent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
     ></webview>
   </div>
@@ -19,7 +22,7 @@ export default {
   name: "web",
   data() {
     return {
-      url: 'http://161.35.107.145#/reader', //db.get("web_url")
+      url: " http://192.168.11.206:8082/#/reader", //db.get("web_url")
     };
   },
   created() {
@@ -27,7 +30,11 @@ export default {
     this.onKey();
   },
   methods: {
-    onLoad() {},
+    onLoad() {
+      ipcRenderer.on('command', (event, message) => {
+        this.$refs.web.executeJavaScript(`window.__command('${message}')`)
+      });
+    },
     onSo() {
       this.url = this.input;
       ipcRenderer.send("webOpacity", "change");
@@ -42,11 +49,11 @@ export default {
     onKey() {
       var that = this;
 
-      hotkeys.filter = function(event) {
+      hotkeys.filter = function (event) {
         return true;
       };
 
-      hotkeys("*", function(e) {
+      hotkeys("*", function (e) {
         if (e.key === "z") {
           var t = document.querySelector(".ifr");
           t.reload();
@@ -60,8 +67,8 @@ export default {
           ipcRenderer.send("webOpacity", "exit");
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

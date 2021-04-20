@@ -27,7 +27,7 @@ export class Book {
   @Get('/info')
   async info(@Ctx() ctx: Koa.Context) {
     return ResultUtils.success({
-      file_path: '/public/book/123.epub',
+      file_path: '/public/book/刀锋397274.epub',
     });
   }
 

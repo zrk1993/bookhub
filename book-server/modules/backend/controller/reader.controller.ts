@@ -50,17 +50,17 @@ export class reader {
 
     return ResultUtils.success({
       code: 'dark',
-      background: 'rgba(255,255,255,.9)',
-      color: 'rgba(255,255,255,.9)',
-      font_size: '26px',
+      background: '#3a3f42',
+      color: '#b6b9bb',
+      font_size: '18px',
     })
 
-    // return ResultUtils.success({
-    //   code: 'dark',
-    //   background: '#1a1a1a',
-    //   color: 'rgba(255,255,255,.6)',
-    //   font_size: '26px',
-    // })
+    return ResultUtils.success({
+      code: 'dark',
+      background: '#1a1a1a',
+      color: 'rgba(255,255,255,.6)',
+      font_size: '18px',
+    })
 
     return ResultUtils.success({
       code: 'default',
