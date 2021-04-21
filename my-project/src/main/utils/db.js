@@ -15,7 +15,7 @@ export default {
     init() {
         let APP = process.type === 'renderer' ? remote.app : app
         let STORE_PATH = APP.getPath('userData')
-        // let STORE_PATH = "/Users/sanjin/work/h5/vue/thief-book/static"
+        //let STORE_PATH = "/Users/sanjin/work/h5/vue/thief-book/static"
 
         if (process.type !== 'renderer') {
             if (!fs.pathExistsSync(STORE_PATH)) {

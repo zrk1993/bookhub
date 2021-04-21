@@ -1,11 +1,8 @@
-const { app, BrowserWindow, Tray, Menu } = require('electron');
-const path = require('path');
-const db = require('./db')
+var { app, BrowserWindow, Tray, Menu, globalShortcut } = require('electron')
+var db = require('./db')
+var path = require('path')
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
-  app.quit();
-}
+let mainWindow
 
 const createWindow = () => {
 
@@ -21,17 +18,17 @@ const createWindow = () => {
   var arr_wz = desktop_wz.split(",");
 
   if (arr_wh.length == 2) {
-      width = parseInt(arr_wh[0]);
-      height = parseInt(arr_wh[1]);
+    width = parseInt(arr_wh[0]);
+    height = parseInt(arr_wh[1]);
   }
 
   if (arr_wh.length == 2) {
-      x = parseInt(arr_wz[1]);
-      y = parseInt(arr_wz[0]);
+    x = parseInt(arr_wz[1]);
+    y = parseInt(arr_wz[0]);
   }
 
   // Create the browser window.
-  let mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width,
     height,
     useContentSize: true,
@@ -57,13 +54,13 @@ const createWindow = () => {
   })
 
   mainWindow.on('resize', () => {
-      var size = mainWindow.getSize();
-      db.set("desktop_wh", size[0].toString() + "," + size[1].toString());
+    var size = mainWindow.getSize();
+    db.set("desktop_wh", size[0].toString() + "," + size[1].toString());
   })
 
   mainWindow.on('move', () => {
-      var position = mainWindow.getPosition();
-      db.set("desktop_wz", position[0].toString() + "," + position[1].toString());
+    var position = mainWindow.getPosition();
+    db.set("desktop_wz", position[0].toString() + "," + position[1].toString());
   })
 
   // Open the DevTools.
@@ -75,15 +72,50 @@ const Exit = () => {
 }
 
 const createTray = () => {
-  const tray = new Tray('./houzi.png')
+  const tray = new Tray(__dirname + '/fz.png')
   const menuList = [{
     accelerator: 'CommandOrControl+Alt+X',
     label: '退出',
     click() {
-        Exit();
+      Exit();
     }
   }];
   tray.setContextMenu(Menu.buildFromTemplate(menuList))
+}
+
+
+let count = 0
+setInterval(() => {
+  count = count + 1
+  if (count > 12) {
+    count = 0
+    if (mainWindow.isVisible()) {
+      mainWindow.hide();
+    }
+  }
+}, 1000);
+
+const createKey = () => {
+  globalShortcut.register('Option+w', () => {
+    count = 0
+  })
+  globalShortcut.register('Option+`', () => {
+    count = 0
+    mainWindow.webContents.send('command', 'prev_page')
+  })
+  globalShortcut.register('Option+1', () => {
+    count = 0
+    mainWindow.webContents.send('command', 'next_page')
+  })
+  globalShortcut.register('Option+q', () => {
+    count = 0
+    mainWindow.webContents.send('command', 'boss')
+    if (mainWindow.isVisible()) {
+      mainWindow.hide();
+    } else {
+      mainWindow.show();
+    }
+  })
 }
 
 // This method will be called when Electron has finished
@@ -92,24 +124,37 @@ const createTray = () => {
 app.on('ready', () => {
   createWindow()
   createTray()
+  createKey()
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.quit();
+    app.quit()
   }
-});
+})
 
 app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+  if (mainWindow === null) {
+    createWindow()
   }
-});
+})
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
+/**
+ * Auto Updater
+ *
+ * Uncomment the following code below and install `electron-updater` to
+ * support auto updating. Code Signing with a valid certificate is required.
+ * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
+ */
+
+/*
+import { autoUpdater } from 'electron-updater'
+
+autoUpdater.on('update-downloaded', () => {
+  autoUpdater.quitAndInstall()
+})
+
+app.on('ready', () => {
+  if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
+})
+ */

@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
+    "fs-extra": "^9.1.0",
     "lowdb": "^1.0.0"
   },
   "devDependencies": {
