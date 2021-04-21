@@ -2,7 +2,7 @@
   <div>
     <div id="reader">
     </div>
-    <div @click="onClickEvent" v-if="false">
+    <div @click="onClickEvent">
       <Control ref="Control"
                :readingProgress="readingProgress"
                @jumpCfi="jumpCfi"
@@ -158,11 +158,15 @@ export default {
         })
         i.document.documentElement.addEventListener('mouseup', function (e) {
           if (Math.abs(mousedownE.clientX - e.clientX) < 5 && Date.now() - mousedownT < 600) {
-            // that.onClickEvent(e)
+            that.onClickEvent(e)
           }
         })
+        i.document.documentElement.addEventListener('touchstart', function (e) {
+          mousedownE = e
+          mousedownT = Date.now()
+        })
         i.document.documentElement.addEventListener('touchend', function (e) {
-          // that.onClickEvent(e)
+          that.onClickEvent(e)
         })
         console.log(i)
       });

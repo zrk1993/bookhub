@@ -2,7 +2,7 @@ const pages = [
   {
     path: '/',
     name: 'home',
-    component: () => import(/* webpackChunkName: "home" */ '../views/home/index')
+    redirect: '/bookshelf'
   },
   {
     path: '/reader',

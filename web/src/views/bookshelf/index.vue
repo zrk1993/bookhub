@@ -1,5 +1,5 @@
 <template>
-  <div class="fs16 bg-white p15">
+  <div class="fs16 p15 bookshelf">
     <div class="mb15 pb15 bdb" v-for="(v, i) in dataList" :key="i">
       <BookItem :data="v"></BookItem>
     </div>
@@ -43,3 +43,15 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.bookshelf {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #3a3f42;
+  color: #b6b9bb;
+}
+</style>

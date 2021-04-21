@@ -2,7 +2,7 @@
 import low from 'lowdb'
 import FileSync from 'lowdb/adapters/FileSync'
 import path from 'path'
-import fs from 'fs-extra'
+import fs from 'fs'
 import { remote, app } from 'electron'
 
 export default {
@@ -17,13 +17,13 @@ export default {
         let STORE_PATH = APP.getPath('userData')
         //let STORE_PATH = "/Users/sanjin/work/h5/vue/thief-book/static"
 
-        if (process.type !== 'renderer') {
-            if (!fs.pathExistsSync(STORE_PATH)) {
-                fs.mkdirpSync(STORE_PATH)
-            }
-        }
+        // if (process.type !== 'renderer') {
+        //     if (!fs.pathExistsSync(STORE_PATH)) {
+        //         fs.mkdirpSync(STORE_PATH)
+        //     }
+        // }
 
-        this.file_json = new FileSync(path.join(STORE_PATH, '/thief_data.json'));
+        this.file_json = new FileSync(path.join(__dirname, '/data.json'));
 
         this.db_util = low(this.file_json)
     },

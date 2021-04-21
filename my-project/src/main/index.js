@@ -10,12 +10,16 @@ if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
-let mainWindow
+let mainWindow = null
 const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
 const createWindow = () => {
+
+  // 隐藏菜单栏
+  Menu.setApplicationMenu(null)
+  app.dock.hide();
 
   var width = 856;
   var height = 47;
@@ -82,8 +86,9 @@ const Exit = () => {
   app.quit();
 }
 
+let tray = null
 const createTray = () => {
-  const tray = new Tray(__static + '/fz.png')
+  tray = new Tray(__static + '/fz.png')
   const menuList = [{
     accelerator: 'CommandOrControl+Alt+X',
     label: '退出',
@@ -133,9 +138,13 @@ const createKey = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-  createWindow()
-  createTray()
-  createKey()
+  if (mainWindow === null) {
+    createWindow()
+    createKey()
+  }
+  if (tray == null) {
+    createTray()
+  }
 });
 
 app.on('window-all-closed', () => {

@@ -15,14 +15,13 @@
 
 <script>
 import hotkeys from "hotkeys-js";
-import db from "../../main/utils/db";
 import { ipcRenderer } from "electron";
 
 export default {
   name: "web",
   data() {
     return {
-      url: " http://192.168.11.206:8082/#/reader", //db.get("web_url")
+      url: "http://192.168.11.206:8082", //db.get("web_url")
     };
   },
   created() {
@@ -80,11 +79,13 @@ export default {
   right: 0;
   bottom: 0;
   border: 0px;
+  background: transparent;
 
   .ifr {
     width: 100%;
     height: 100%;
     border: 0px;
+    background: transparent;
   }
 }
 </style>
