@@ -49,7 +49,7 @@ export default {
     }
   },
   mounted() {
-    this.book_id = this.$route.query.book_id || this.$route.query.title
+    this.book_id = this.$route.query.id || this.$route.query.title
     this.getData()
     this.getAppearance()
     this.getProgress()
@@ -144,8 +144,6 @@ export default {
       });
 
       this.jumpCfi(this.readingProgress.cfi)
-      console.log(rendition)
-
       this.setTheme()
 
       rendition.on("rendered", (e, i) => {
@@ -153,7 +151,6 @@ export default {
         that.setTheme()
         let mousedownE = null
         let mousedownT = null
-        console.log(e)
         i.document.documentElement.addEventListener('mousedown', function (e) {
           mousedownE = e
           mousedownT = Date.now()
@@ -170,7 +167,6 @@ export default {
         i.document.documentElement.addEventListener('touchend', function (e) {
           that.onClickEvent(e)
         })
-        console.log(i)
       });
 
       //  时时保存阅读进度
@@ -190,7 +186,6 @@ export default {
       // 加载目录
       book.loaded.navigation.then(navigation => {
         that.toc = navigation.toc
-        console.log(navigation.toc)
       });
     },
     async getData() {
