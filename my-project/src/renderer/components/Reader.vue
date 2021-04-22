@@ -21,7 +21,7 @@ export default {
   name: "web",
   data() {
     return {
-      url: "http://192.168.11.206:8082", //db.get("web_url")
+      url: "http://161.35.107.145:3001", //db.get("web_url")
     };
   },
   created() {

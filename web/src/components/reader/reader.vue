@@ -119,15 +119,17 @@ export default {
     },
     setTheme() {
       // 设置样式
-      this.rendition.themes.default({
-        body: {
-          'font-size': this.appearanceInfo.font_size,
-          'color': this.appearanceInfo.color,
-          'background': this.appearanceInfo.background
-        },
-      });
-      if (this.readDoc) {
-        this.readDoc.document.documentElement.style.fontSize = this.appearanceInfo.font_size
+      if (this.rendition) {
+        this.rendition.themes.default({
+          body: {
+            'font-size': this.appearanceInfo.font_size,
+            'color': this.appearanceInfo.color,
+            'background': this.appearanceInfo.background
+          },
+        });
+        if (this.readDoc) {
+          this.readDoc.document.documentElement.style.fontSize = this.appearanceInfo.font_size
+        }
       }
     },
     renderBook() {
