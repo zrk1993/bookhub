@@ -12,7 +12,11 @@ export class ProgressModel extends BaseModel<ITableStructure> {
     }
 
     async getByBookId(v) {
-        return await this.$db.query('SELECT * FROM t_read_progress WHERE book_id = ?', [v])
+        const res = await this.$db.query('SELECT * FROM t_read_progress WHERE book_id = ?', [v])
+        return res ? res[0] : null
+    }
+    async updateByBookId (id, v) {
+        return await this.$db.table(this.$tableName).where({ 'book_id': id }).update(v);
     }
 
 }
