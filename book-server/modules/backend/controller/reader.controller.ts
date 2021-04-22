@@ -31,7 +31,7 @@ export class reader {
   })
   async upProgress(@Ctx() ctx: Koa.Context, @Body() body: any) {
     if (body.book_id) {
-      const progress = await ReadProgressModel.getById(body.book_id);
+      const progress = await ReadProgressModel.getByBookId(body.book_id);
       await ReadProgressModel.updateById(body.book_id, Object.assign(progress, body))
     } else {
       await ReadProgressModel.insert({

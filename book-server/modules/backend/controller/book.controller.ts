@@ -16,6 +16,17 @@ import BookModel from '@/model/book'
 @Controller('/book')
 @Description('book')
 export class Book {
+
+  @Get('/test')
+  @Render('index')
+  async test(@Ctx() ctx: Koa.Context) {
+    return {
+      bookPath: '/public/book/英文原版小王子thelittleprince振宇英语3096119.epub',
+      bookName: '123',
+      bookProgress: 0
+    }
+  }
+
   
   @Get('/info')
   async info(@Ctx() ctx: Koa.Context) {

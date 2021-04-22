@@ -31,7 +31,6 @@ export default {
       book_id: null,
       loading: false,
       clickListen: null,
-      loadingEpub: false,
       bookInfo: null,
       appearanceInfo: {
         'font-size': '22px',
@@ -60,7 +59,6 @@ export default {
         that.prevPage();
       }
       if (v === 'next_page') {
-        console.log(1)
         that.nextPage();
       }
       if (v === 'boss') {
@@ -101,7 +99,6 @@ export default {
       }
     },
     nextChapter() {
-      console.log(this.rendition)
       const i = this.toc.findIndex((v) => v.href === this.readingProgress.href)
       const n = this.toc[i + 1]
       if (n) this.rendition.display(n.ref);
@@ -134,17 +131,21 @@ export default {
     },
     renderBook() {
       const that = this
-      this.loadingEpub = true
-      const book = window.ePub(this.bookInfo.file_path);
-      this.loadingEpub = false
+      const book = window.ePub(this.bookInfo.file_path)
+
       const rendition = this.rendition = book.renderTo("reader", {
         width: '100%',
         height: document.documentElement.clientHeight,
         flow: "paginated"
       });
 
-      this.jumpCfi(this.readingProgress.cfi)
       this.setTheme()
+
+      if (this.readingProgress && this.readingProgress.cfi) {
+        this.jumpCfi(this.readingProgress.cfi)
+      } else {
+        this.rendition.display();
+      }
 
       rendition.on("rendered", (e, i) => {
         that.readDoc = i
@@ -174,7 +175,6 @@ export default {
         that.readingProgress.percentage = location.start.percentage
         that.readingProgress.cfi = location.start.cfi
         that.readingProgress.href = location.start.href
-        console.log(location)
         that.setProgress(location.start)
       });
 

@@ -1,6 +1,6 @@
 import '@vant/touch-emulator'
 import Vue from 'vue'
-import ePub from 'epubjs'
+//import ePub from 'epubjs'
 import VConsole from 'vconsole'
 import App from './App.vue'
 import router from './router'
@@ -12,7 +12,7 @@ import './style/utils.css'
 import './style/flex.scss'
 
 Vue.config.productionTip = false
-window.ePub = ePub
+//window.ePub = ePub
 
 Vue.use(vantUi)
 

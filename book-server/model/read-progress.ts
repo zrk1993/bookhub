@@ -11,6 +11,10 @@ export class ProgressModel extends BaseModel<ITableStructure> {
         super({ tableName, primaryKey: 'id' });
     }
 
+    async getByBookId(v) {
+        return await this.$db.query('SELECT * FROM t_read_progress WHERE book_id = ?', [v])
+    }
+
 }
 
 export default new ProgressModel();
