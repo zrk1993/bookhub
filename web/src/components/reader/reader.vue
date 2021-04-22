@@ -49,7 +49,7 @@ export default {
     }
   },
   mounted() {
-    this.book_id = this.$route.query.book_id || 1
+    this.book_id = this.$route.query.book_id || this.$route.query.title
     this.getData()
     this.getAppearance()
     this.getProgress()

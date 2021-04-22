@@ -1,18 +1,23 @@
 <template>
   <div class="fs16 p15 bookshelf">
     <div class="mb15 pb15 bdb" v-for="(v, i) in dataList" :key="i">
-      <BookItem :data="v"></BookItem>
+      <BookItem :data="v" @change="getData"></BookItem>
+    </div>
+    <div class="mt20">
+      <UploadBook></UploadBook>
     </div>
   </div>
 </template>
 
 <script>
-import { bookshelfList } from '@/services/bookshelf'
+import { bookshelfList } from '@/services/book'
 import BookItem from '@/components/bookshelf/book-item'
+import UploadBook from '@/components/bookshelf/upload-book'
 
 export default {
   components: {
-    BookItem
+    BookItem,
+    UploadBook
   },
   data () {
     return {
@@ -29,7 +34,7 @@ export default {
         this.loading = true
         const { code, data, message } = await bookshelfList()
         if (code === 0) {
-          this.dataList = data.data
+          this.dataList = data
         } else {
           this.$notify({ type:'warning', message })
         }

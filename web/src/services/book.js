@@ -8,3 +8,21 @@ export function bookInfo (data) {
     }
   })
 }
+
+export function bookshelfList (data) {
+  return request('/book/list', {
+    method: 'GET',
+    params: {
+      ...data
+    }
+  })
+}
+
+export function removeBook (data) {
+  return request('/book/remove', {
+    method: 'POST',
+    data: {
+      ...data
+    }
+  })
+}

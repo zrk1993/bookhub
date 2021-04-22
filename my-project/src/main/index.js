@@ -103,7 +103,7 @@ const createTray = () => {
 let count = 0
 setInterval(() => {
   count = count + 1
-  if (count > 60) {
+  if (count > 100) {
     count = 0
     if (mainWindow && mainWindow.isVisible()) {
       mainWindow.hide();

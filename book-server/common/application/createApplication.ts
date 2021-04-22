@@ -2,9 +2,8 @@
  * @Author: kun
  * @Date: 2019-3
  */
-
+ const koaBody = require('koa-body');
 import * as Path from 'path';
-import * as Bodyparser from 'koa-bodyparser';
 import * as koaStatic from 'koa-static';
 import * as helmet from 'koa-helmet';
 import * as mount from 'koa-mount';
@@ -18,7 +17,6 @@ export interface ApplicationOptions {
   logger?: ILogger;
   staticAssets?: { root: string; prefix?: string } | object;
   swagger?: { url: string; prefix?: string } | boolean;
-  bodyparser?: Bodyparser.Options | boolean;
   helmet?: object | boolean;
   cors?: object | boolean;
 }
@@ -70,18 +68,13 @@ export async function createApplication(
   );
   app.use(mount(wwwAssetsOptions.prefix, koaStatic(wwwAssetsOptions.root, wwwAssetsOptions as any)));
 
-  if (options.bodyparser !== false) {
-    const bodyparserOptions = Object.assign(
-      {
-        enableTypes: ['json', 'form'],
-        textLimit: '1mb',
-        jsonLimit: '1mb',
-      },
-      options.bodyparser,
-    );
-    logger.info('应用全局中间件 %s', 'koa-bodyparser');
-    app.use(Bodyparser(bodyparserOptions));
-  }
+  logger.info('应用全局中间件 %s', 'koa-body');
+  app.use(koaBody({
+    multipart: true,
+    formidable: {
+      maxFileSize: 200*1024*1024  // 设置上传文件大小最大限制，默认2M
+    }
+  }));
 
   if (options.swagger !== false) {
     const swaggerOptions = Object.assign(
