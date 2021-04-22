@@ -18,7 +18,7 @@ export class reader {
 
   @Get('/progress')
   async getProgress(@Ctx() ctx: Koa.Context) {
-    const progress = await ReadProgressModel.getById(ctx.query.book_id);
+    const progress = await ReadProgressModel.getByBookId(ctx.query.book_id);
     return ResultUtils.success(progress)
   }
 
