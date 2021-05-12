@@ -1,5 +1,4 @@
 import { app, BrowserWindow, Tray, Menu, globalShortcut } from 'electron'
-import db from './utils/db'
 import path from 'path'
 
 /**
@@ -21,26 +20,10 @@ const createWindow = () => {
   Menu.setApplicationMenu(null)
   app.dock.hide();
 
-  var width = 856;
-  var height = 47;
-  var x = 356;
-  var y = 429;
-
-  var desktop_wh = db.get('desktop_wh') || '';
-  var desktop_wz = db.get('desktop_wz') || '';
-
-  var arr_wh = desktop_wh.split(",");
-  var arr_wz = desktop_wz.split(",");
-
-  if (arr_wh.length == 2) {
-    width = parseInt(arr_wh[0]);
-    height = parseInt(arr_wh[1]);
-  }
-
-  if (arr_wh.length == 2) {
-    x = parseInt(arr_wz[1]);
-    y = parseInt(arr_wz[0]);
-  }
+  var width = 320;
+  var height = 530;
+  var x = 30;
+  var y = 120;
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -70,12 +53,12 @@ const createWindow = () => {
 
   mainWindow.on('resize', () => {
     var size = mainWindow.getSize();
-    db.set("desktop_wh", size[0].toString() + "," + size[1].toString());
+    //db.set("desktop_wh", size[0].toString() + "," + size[1].toString());
   })
 
   mainWindow.on('move', () => {
     var position = mainWindow.getPosition();
-    db.set("desktop_wz", position[0].toString() + "," + position[1].toString());
+    //db.set("desktop_wz", position[0].toString() + "," + position[1].toString());
   })
 
   // Open the DevTools.
@@ -88,7 +71,7 @@ const Exit = () => {
 
 let tray = null
 const createTray = () => {
-  tray = new Tray(__static + '/fz.png')
+  tray = new Tray(__static + '/b3.png')
   const menuList = [{
     accelerator: 'CommandOrControl+Alt+X',
     label: '退出',
@@ -103,7 +86,7 @@ const createTray = () => {
 let count = 0
 setInterval(() => {
   count = count + 1
-  if (count > 100) {
+  if (count > 300) {
     count = 0
     if (mainWindow && mainWindow.isVisible()) {
       mainWindow.hide();
@@ -122,6 +105,26 @@ const createKey = () => {
   globalShortcut.register('Option+1', () => {
     count = 0
     mainWindow.webContents.send('command', 'next_page')
+  })
+  globalShortcut.register('Option+m', () => {
+    count = 0
+    mainWindow.webContents.send('command', 'm')
+  })
+  globalShortcut.register('Option+p', () => {
+    count = 0
+    mainWindow.webContents.send('command', 'p')
+  })
+  globalShortcut.register('Option+r', () => {
+    count = 0
+    mainWindow.webContents.send('command', 'r')
+  })
+  globalShortcut.register('Option+i', () => {
+    count = 0
+    mainWindow.webContents.send('command', 'i')
+  })
+  globalShortcut.register('Option+u', () => {
+    count = 0
+    mainWindow.webContents.send('command', 'u')
   })
   globalShortcut.register('Option+q', () => {
     count = 0

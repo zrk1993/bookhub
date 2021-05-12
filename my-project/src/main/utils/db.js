@@ -23,16 +23,16 @@ export default {
         //     }
         // }
 
-        this.file_json = new FileSync(path.join(__dirname, '/data.json'));
+        // this.file_json = new FileSync(path.join(STORE_PATH, '/data.json'));
 
-        this.db_util = low(this.file_json)
+        // this.db_util = low(this.file_json)
     },
     get(key) {
         this.init();
-        return this.db_util.get(key).value();
+        return '' //this.db_util.get(key).value();
     },
     set(key, value) {
         this.init();
-        this.db_util.set(key, value).write();
+        //this.db_util.set(key, value).write();
     }
 };
