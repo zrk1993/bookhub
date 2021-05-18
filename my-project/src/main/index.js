@@ -71,7 +71,7 @@ const Exit = () => {
 
 let tray = null
 const createTray = () => {
-  tray = new Tray(__static + '/b3.png')
+  tray = new Tray(__static + '/13.png')
   const menuList = [{
     accelerator: 'CommandOrControl+Alt+X',
     label: '退出',
@@ -86,7 +86,7 @@ const createTray = () => {
 let count = 0
 setInterval(() => {
   count = count + 1
-  if (count > 300) {
+  if (count > 1000) {
     count = 0
     if (mainWindow && mainWindow.isVisible()) {
       mainWindow.hide();

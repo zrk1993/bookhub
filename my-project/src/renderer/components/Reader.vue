@@ -53,6 +53,10 @@ export default {
     },
     is () {
       this.$refs.web.insertCSS(`
+          .readerContent .app_content {
+            background-color: #3b3f41 !important;
+          }
+          
           *::-webkit-scrollbar {
             width: 1px;
             height: 1px
@@ -73,6 +77,8 @@ export default {
             border-radius: 10px;
             background   : rgba(100, 100, 100, .1);
           }
+
+          #3b3f41
         `)
     },
     onLoad() {
