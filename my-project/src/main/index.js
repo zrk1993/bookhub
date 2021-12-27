@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Tray, Menu, globalShortcut } from 'electron'
+import { app, BrowserWindow, Tray, Menu, globalShortcut, ipcMain } from 'electron'
 import path from 'path'
 
 /**
@@ -61,6 +61,13 @@ const createWindow = () => {
     //db.set("desktop_wz", position[0].toString() + "," + position[1].toString());
   })
 
+  ipcMain.on('command', (event, arg) => {
+    console.log(arg)
+    if (arg == 'boss') {
+      mainWindow.hide();
+    }
+  })
+
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
 };
@@ -102,9 +109,13 @@ const createKey = () => {
     count = 0
     mainWindow.webContents.send('command', 'prev_page')
   })
-  globalShortcut.register('Option+1', () => {
+  globalShortcut.register('Option+q', () => {
     count = 0
     mainWindow.webContents.send('command', 'next_page')
+  })
+  globalShortcut.register('Option+s', () => {
+    count = 0
+    mainWindow.webContents.send('command', 'auto_page')
   })
   globalShortcut.register('Option+m', () => {
     count = 0
@@ -126,7 +137,16 @@ const createKey = () => {
     count = 0
     mainWindow.webContents.send('command', 'u')
   })
-  globalShortcut.register('Option+q', () => {
+  globalShortcut.register('Option+1', () => {
+    count = 0
+    mainWindow.webContents.send('command', 'boss')
+    if (mainWindow.isVisible()) {
+      mainWindow.hide();
+    } else {
+      mainWindow.show();
+    }
+  })
+  globalShortcut.register('Option+a', () => {
     count = 0
     mainWindow.webContents.send('command', 'boss')
     if (mainWindow.isVisible()) {

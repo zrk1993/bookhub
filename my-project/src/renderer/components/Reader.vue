@@ -15,8 +15,15 @@
         <span>color:</span>
         <input type="color" v-model="color">
       </div>
+      <div>
+        <span>interval:</span>
+        <input type="interval" v-model="interval"> &nbsp;&nbsp;&nbsp;
+      </div>
       <button style="width: 100%; margin-top:5px;" @click="ok">save</button>
     </div>
+    <!-- <div class="progress-box">
+      <progress class="pr" value="22" max="100"></progress> 
+    </div> -->
     <webview
       v-if="url"
       class="ifr"
@@ -39,9 +46,12 @@ export default {
   name: "web",
   data() {
     return {
+      mousedowntime: 0,
       sss: false,
       i: 0,
+      interval: +localStorage.getItem('interval') || 3000,
       type: 'm',
+      timer: null,
       fontSize: localStorage.getItem('fontSize') || '18',
       url: localStorage.getItem('url') || 'https://www.baidu.com',
       background: localStorage.getItem('background') || '#3b3f41',
@@ -63,16 +73,39 @@ export default {
     this.onKey();
 
     document.oncontextmenu = () => {
-      this.$refs.web.executeJavaScript(`document.documentElement.scrollTop += document.documentElement.clientHeight * 1`)
+      this.nextPage()
     }
+    document.ondblclick = () => {
+      console.log('aaaa')
+      ipcRenderer.send("command", "boss");
+    }
+    document.addEventListener('mousedown', () => {
+      if (Date.now() - this.mousedowntime < 280) {
+        ipcRenderer.send("command", "boss");
+      }
+      this.mousedowntime = Date.now()
+    })
   },
   methods: {
+    autoPage () {
+      if (this.timer) {
+        clearInterval(this.timer)
+      } else {
+        this.timer = setInterval(() => {
+          this.nextPage()
+        }, this.interval)
+      }
+    },
+    nextPage () {
+      this.$refs.web.executeJavaScript(`document.documentElement.scrollTop += document.documentElement.clientHeight * 1`)
+    },
     ok () {
       this.url = this.url1
       localStorage.setItem('url', this.url)
       localStorage.setItem('fontSize', this.fontSize)
       localStorage.setItem('background', this.background)
       localStorage.setItem('color', this.color)
+      localStorage.setItem('interval', this.interval)
       this.is()
     },
     is () {
@@ -85,9 +118,11 @@ export default {
             margin-right: 5px;
           }
           .readerContent .app_content .readerChapterContent,
+          .readerContent .app_content .readerChapterContent *,
           .readerContent .app_content .readerChapterContent body,
           .readerContent .app_content .readerChapterContent span {
             font-size: ${this.fontSize}px !important;
+            // line-height: 70%;
             color: ${this.color} !important;
           }
           *::-webkit-scrollbar {
@@ -111,7 +146,6 @@ export default {
             background   : rgba(100, 100, 100, .1);
           }
         `)
-        console.log(111)
     },
     onLoad() {
       this.$refs.web.addEventListener("did-stop-loading", ()=> {
@@ -132,7 +166,10 @@ export default {
           this.$refs.web.goBack()
         }
         if (message == 'next_page') {
-          this.$refs.web.goForward()
+          this.nextPage()
+        }
+        if (message == 'auto_page') {
+          this.autoPage()
         }
         if (message == 'm') {
           this.type = 'm'
@@ -205,6 +242,25 @@ export default {
     height: 100%;
     border: 0px;
     background: transparent;
+  }
+
+  .progress-box {
+    position: fixed;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+
+    .pr {
+      width: 100%;
+      height: 2px;
+      background: rgba(0, 0, 0, 0);
+    }
+    progress::-webkit-progress-bar {
+      border-radius: 8px;
+    }
+    progress::-webkit-progress-value {
+      border-radius: 8px;
+    }
   }
 }
 
