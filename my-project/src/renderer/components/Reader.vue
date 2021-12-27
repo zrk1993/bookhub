@@ -1,8 +1,21 @@
 <template>
   <div class="container" style="color: #fff">
-    <div v-if="sss">
-      <input type="text" v-model="url1">
-      <button @click="ok">ok</button>
+    <div v-if="sss" :style="{ 'background-color': background, color }" style="padding: 5px;">
+      <div>
+        <span>url:</span>
+        <input type="text" v-model="url1"> &nbsp;&nbsp;
+
+        <span>font-size:</span>
+        <input type="number" v-model="fontSize" style="width: 30px;">
+      </div>
+      <div>
+        <span>background:</span>
+        <input type="color" v-model="background"> &nbsp;&nbsp;&nbsp;
+
+        <span>color:</span>
+        <input type="color" v-model="color">
+      </div>
+      <button style="width: 100%; margin-top:5px;" @click="ok">save</button>
     </div>
     <webview
       v-if="url"
@@ -29,7 +42,10 @@ export default {
       sss: false,
       i: 0,
       type: 'm',
+      fontSize: localStorage.getItem('fontSize') || '18',
       url: localStorage.getItem('url') || 'https://www.baidu.com',
+      background: localStorage.getItem('background') || '#3b3f41',
+      color: localStorage.getItem('color') || 'https://www.baidu.com',
       url1: localStorage.getItem('url'),
     };
   },
@@ -45,21 +61,38 @@ export default {
   mounted() {
     this.onLoad();
     this.onKey();
+
+    document.oncontextmenu = () => {
+      this.$refs.web.executeJavaScript(`document.documentElement.scrollTop += document.documentElement.clientHeight * 1`)
+    }
   },
   methods: {
     ok () {
       this.url = this.url1
       localStorage.setItem('url', this.url)
+      localStorage.setItem('fontSize', this.fontSize)
+      localStorage.setItem('background', this.background)
+      localStorage.setItem('color', this.color)
+      this.is()
     },
     is () {
       this.$refs.web.insertCSS(`
           .readerContent .app_content {
-            background-color: #3b3f41 !important;
+            background-color: ${this.background} !important;
           }
-          
+          .readerContent .app_content .readerChapterContent {
+            margin-left: 5px;
+            margin-right: 5px;
+          }
+          .readerContent .app_content .readerChapterContent,
+          .readerContent .app_content .readerChapterContent body,
+          .readerContent .app_content .readerChapterContent span {
+            font-size: ${this.fontSize}px !important;
+            color: ${this.color} !important;
+          }
           *::-webkit-scrollbar {
             width: 1px;
-            height: 1px
+            height: 1px;
           }
 
           *::-webkit-scrollbar-thumb {
@@ -77,9 +110,8 @@ export default {
             border-radius: 10px;
             background   : rgba(100, 100, 100, .1);
           }
-
-          #3b3f41
         `)
+        console.log(111)
     },
     onLoad() {
       this.$refs.web.addEventListener("did-stop-loading", ()=> {
@@ -109,6 +141,7 @@ export default {
           this.type = 'p'
         }
         if (message == 'r') {
+          this.i += 1
           this.$refs.web.reload()
         }
         if (message == 'i') {
