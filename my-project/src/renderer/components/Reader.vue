@@ -46,6 +46,7 @@ export default {
   name: "web",
   data() {
     return {
+      readerBottomBar: true,
       mousedowntime: 0,
       sss: false,
       i: 0,
@@ -147,9 +148,26 @@ export default {
           }
         `)
     },
+    toogleReaderBottomBar() {
+      if (this.readerBottomBar) {
+        this.$refs.web.insertCSS(`
+          .readerContent .readerBottomBar {
+            display: none !important;
+          }
+      `)
+      } else {
+        this.$refs.web.insertCSS(`
+          .readerContent .readerBottomBar {
+            display: flex !important;
+          }
+      `)
+      }
+      this.readerBottomBar = !this.readerBottomBar
+    },
     onLoad() {
       this.$refs.web.addEventListener("did-stop-loading", ()=> {
         //注入css
+        this.toogleReaderBottomBar()
         this.is()
       });
       this.$refs.web.addEventListener("dom-ready", ()=> {
@@ -186,6 +204,9 @@ export default {
         }
         if (message == 'u') {
           this.sss = !this.sss
+        }
+        if (message == 'y') {
+          this.toogleReaderBottomBar()
         }
         console.log(message)
       });

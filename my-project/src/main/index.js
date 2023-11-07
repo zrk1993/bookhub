@@ -137,6 +137,9 @@ const createKey = () => {
     count = 0
     mainWindow.webContents.send('command', 'u')
   })
+  globalShortcut.register('Option+y', () => {
+    mainWindow.webContents.send('command', 'y')
+  })
   globalShortcut.register('Option+1', () => {
     count = 0
     mainWindow.webContents.send('command', 'boss')
